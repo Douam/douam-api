@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Controller\PostCountController;
 use App\Controller\PostPublishController;
 use App\Repository\PostRepository;
 use DateTime;
@@ -20,7 +21,32 @@ use Symfony\Component\Validator\Constraints\Length;
     denormalizationContext: ['groups' => ['write:Post']],
     collectionOperations:[
         'get',
-        'post'
+        'post',
+        'count' => [
+            'method' => 'GET',
+            'path' => '/posts/count',
+            'controller' => PostCountController::class,
+            'read' => false,
+            'filters' => [],
+            'pagination_enable' => false,
+            'openapi_context' => [
+                'summary' => 'Find All visible article',
+                'parameters' => [
+
+                    [
+                        'in' => 'query',
+                    'name' => 'online',
+                    'schema' => [
+                        'type' => 'integer',
+                        'maximum' => 1,
+                        'minimum' => 0
+                    ],
+                    'description' => 'filter online articles'
+                    ]
+                ],
+            ]
+        ]
+
         /**
          *  => [
         *  'validations_groups' => [Post::class, 'validationsGroups']
@@ -36,7 +62,18 @@ use Symfony\Component\Validator\Constraints\Length;
         'publish' => [
             'method' => 'POST',
             'path' => '/posts/{id}/publish',
-            'controller' => PostPublishController::class
+            'controller' => PostPublishController::class,
+            'openapi_context' => [
+                'summary' => 'Publish a post simply',
+                'requestBody' => [
+                    'content' => [
+                        'application/json' => [
+                                'schema' => []
+                            ]
+                        ]
+                    ]
+                
+                ]
         ]
     ]
         ),
