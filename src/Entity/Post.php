@@ -2,26 +2,46 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Controller\PostPublishController;
 use App\Repository\PostRepository;
 use DateTime;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints\Date;
+use Symfony\Component\Validator\Constraints\Length;
 
 #[ORM\Entity(repositoryClass: PostRepository::class)]
 #[ApiResource(
     normalizationContext: ['groups' => ['read:collection']],
     denormalizationContext: ['groups' => ['write:Post']],
+    collectionOperations:[
+        'get',
+        'post'
+        /**
+         *  => [
+        *  'validations_groups' => [Post::class, 'validationsGroups']
+        *]
+         */
+    ],
     itemOperations: [
         'put',
         'delete',
         'get' => [
             'normalization_context' => ['groups' => ['read:collection', 'read:item', 'read:Post']]
+        ],
+        'publish' => [
+            'method' => 'POST',
+            'path' => '/posts/{id}/publish',
+            'controller' => PostPublishController::class
         ]
     ]
-)]
+        ),
+     ApiFilter(SearchFilter::class, properties: ['id' => 'exact', 'title' => 'partial'] )   
+    ]
 class Post
 {
     #[ORM\Id]
@@ -32,7 +52,10 @@ class Post
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['read:collection', 'write:Post'])]
+    #[
+        Groups(['read:collection', 'write:Post']),
+        Length(min:5, groups: ['create:Post'])
+     ]
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]
@@ -53,6 +76,11 @@ class Post
     #[ORM\ManyToOne(inversedBy: 'posts')]
     #[Groups(['read:item', 'put:Post'])]
     private ?Category $category = null;
+
+    #[ORM\Column]
+    #[Groups(['read:collection'])]
+    private ?bool $online = false;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -131,6 +159,18 @@ class Post
     public function setCategory(?Category $category): self
     {
         $this->category = $category;
+
+        return $this;
+    }
+
+    public function isOnline(): ?bool
+    {
+        return $this->online;
+    }
+
+    public function setOnline(bool $online): self
+    {
+        $this->online = $online;
 
         return $this;
     }
