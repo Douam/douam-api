@@ -40,7 +40,7 @@ class OpenApiFactory implements OpenApiFactoryInterface
             'porperties' => [
                 'username' => [
                     'type' => 'string',
-                    'example' => 'douam.fr'
+                    'example' => 'douam@gmail.fr'
                 ],
                 'password' => [
                     'type' => 'string'
@@ -78,6 +78,20 @@ class OpenApiFactory implements OpenApiFactoryInterface
         );
 
         $openapi->getPaths()->addPath('/api/login', $pathItem);
+
+        $pathItem = new PathItem(
+            post: new Operation(
+                operationId: 'postApiLogout',
+                tags: ['Auth'],
+                responses: [
+                    '204' => [
+                        
+                    ]
+                ]
+            )
+        );
+
+        $openapi->getPaths()->addPath('/api/logout', $pathItem);
         return $openapi;
     
     }
