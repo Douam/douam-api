@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Controller\PostCountController;
@@ -44,6 +45,19 @@ use Symfony\Component\Validator\Constraints\Length;
                     'description' => 'filter online articles'
                     ]
                 ],
+                'responses' => [
+                    '200' => [
+                        'description' => 'OK Response',
+                        'content' => [
+                            'application/json' => [
+                                'schema' => [
+                                    'type' => 'integer',
+                                    'example' => 4
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
             ]
         ]
 
@@ -115,7 +129,10 @@ class Post
     private ?Category $category = null;
 
     #[ORM\Column]
-    #[Groups(['read:collection'])]
+    #[Groups(['read:collection']),
+        ApiProperty(openapiContext: ['type' => 'boolean', 'description' => 'online or not'])   
+     ]
+    
     private ?bool $online = false;
 
     public function __construct()
