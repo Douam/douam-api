@@ -21,7 +21,11 @@ use Symfony\Component\Validator\Constraints\Length;
     normalizationContext: ['groups' => ['read:collection']],
     denormalizationContext: ['groups' => ['write:Post']],
     collectionOperations:[
-        'get',
+        'get' =>[
+            'openapi_context' => [
+                'security' => [['bearerAuth' => []]]
+            ]
+        ],
         'post',
         'count' => [
             'method' => 'GET',

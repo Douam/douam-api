@@ -27,10 +27,10 @@ class OpenApiFactory implements OpenApiFactoryInterface
         $openapi->getPaths()->addPath('/ping', new PathItem(null, 'Ping',null, new Operation('ping-id', [], [], 'Reponse')));
         
         $schemas = $openapi->getComponents()->getSecuritySchemes();
-        $schemas['cookieAuth'] = new \ArrayObject([
-            'type' => 'apiKey',
-            'in' => 'cookie',
-            'name' => 'PHPSESSID'
+        $schemas['bearerAuth'] = new \ArrayObject([
+            'type' => 'http',
+            'scheme' => 'bearer',
+            'bearerFormat' => 'JWT'
         ]);
         //$openapi = $openapi->withSecurity(['cookieAuth' => []]);
 
@@ -44,6 +44,16 @@ class OpenApiFactory implements OpenApiFactoryInterface
                 ],
                 'password' => [
                     'type' => 'string'
+                ]
+            ]
+        ]);
+
+        $schemas['Token'] = new \ArrayObject([
+            'type' => 'object',
+            'porperties' => [
+                'token' => [
+                    'type' => 'string',
+                    'readonly' => true
                 ]
             ]
         ]);
@@ -64,11 +74,11 @@ class OpenApiFactory implements OpenApiFactoryInterface
                 ),
                 responses: [
                     '200' => [
-                        'description' => 'user connected',
+                        'description' => 'user connected with Token JWT',
                         'content' => [
                             'application/json' => [
                                 'schema' => [
-                                    '$ref' => '#components/schemas/User-read.User'
+                                    '$ref' => '#components/schemas/Token'
                                 ]
                             ]
                         ]
