@@ -1,0 +1,18 @@
+pipeline{
+    agent any 
+    environnement{
+        staging_server="127.0.0.1"
+    }
+    stages{
+        stage('DEPLOYMENT')
+            steps{
+                sh '''
+                for fileName in `find ${WORKSPACE} -type f -mmin -10 | grep -v ".git" | grep -v "jenkinsfile"` 
+                do
+                    echo ${fileName}
+                    scp ${WORKSPACE}/= root@${staging_server}:/var/www/douam-api
+                done
+                '''
+            }
+    }
+}
