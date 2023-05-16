@@ -56,5 +56,5 @@ jobs:
         with:
           app-name: 'WEB-BOT-APPV2-API'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_8F599277B5184CCEBB80C7F836E5EF16 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_3A3AD8DDA1CB42DEAA9D5639F773DE76 }}
           package: .
